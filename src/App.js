@@ -6,45 +6,98 @@ class App extends Component {
     super(props);
     this.state = {
       cards: [
-        { id: 1, color: "red" },
-        { id: 2, color: "yellow" },
-        { id: 3, color: "green" },
-        { id: 4, color: "blue" },
-        { id: 5, color: "black" },
-        { id: 6, color: "brown" },
-        { id: 8, color: "grey" },
-        { id: 9, color: "pink" },
-        { id: 10, color: "purple" },
-        { id: 11, color: "red" },
-        { id: 12, color: "yellow" },
-        { id: 13, color: "green" },
-        { id: 14, color: "blue" },
-        { id: 15, color: "black" },
-        { id: 16, color: "brown" },
-        { id: 18, color: "grey" },
-        { id: 19, color: "pink" },
-        { id: 20, color: "purple" }
+        { id: 1, color: "red", visible: false, match: false },
+        { id: 2, color: "yellow", visible: false, match: false },
+        { id: 3, color: "green", visible: false, match: false },
+        { id: 4, color: "blue", visible: false, match: false },
+        { id: 5, color: "black", visible: false, match: false },
+        { id: 6, color: "brown", visible: false, match: false },
+        { id: 8, color: "grey", visible: false, match: false },
+        { id: 9, color: "pink", visible: false, match: false },
+        { id: 10, color: "purple", visible: false, match: false },
+        { id: 11, color: "red", visible: false, match: false },
+        { id: 12, color: "yellow", visible: false, match: false },
+        { id: 13, color: "green", visible: false, match: false },
+        { id: 14, color: "blue", visible: false, match: false },
+        { id: 15, color: "black", visible: false, match: false },
+        { id: 16, color: "brown", visible: false, match: false },
+        { id: 18, color: "grey", visible: false, match: false },
+        { id: 19, color: "pink", visible: false, match: false },
+        { id: 20, color: "purple", visible: false, match: false }
       ],
-      start: false,
       selected: {
         id: 0,
         color: "",
-        isTrue: false
+        visible: false,
+        match: false
       },
-      selects: []
+      selecs: []
     };
 
     this.handleSelectCard = this.handleSelectCard.bind(this);
   }
 
   handleSelectCard(item) {
-    this.setState({
-      selected: {
+    if (!item.match) {
+      const selected = {
         id: item.id,
         color: item.color,
-        isTrue: true
+        visible: true
+      };
+      let novoSelects = [];
+      if (this.state.selecs.length <= 2) {
+        novoSelects.push(selected);
       }
-    });
+      console.log("CADE", novoSelects);
+      console.log("CADE2", this.state.selecs);
+
+      this.setState(
+        {
+          selected,
+          selecs: novoSelects
+        },
+        () => {
+          if (this.state.selecs.length === 2) {
+            this.state.selecs.forEach(item => {
+              if (
+                this.state.selected.color === item.color &&
+                this.state.selected.id === item.id
+              ) {
+                console.log("COMO", this.state.selected);
+                console.log("COMO2", item);
+
+                const itemNovo = {
+                  ...item,
+                  match: true
+                };
+
+                let cardsNovos = [];
+
+                for (let i = 0; i < this.state.cards.length; i++) {
+                  if (this.state.cards[i].id === item.id) {
+                    cardsNovos.push(itemNovo);
+                  } else {
+                    cardsNovos.push(this.state.cards[i]);
+                  }
+                }
+                console.log("XECA", cardsNovos);
+                this.setState(
+                  {
+                    cards: cardsNovos
+                  },
+                  () => console.log("POXA", this.state)
+                );
+              }
+            });
+
+            // this.setState({
+            //   selecs: [],
+            //   selected: {}
+            // });
+          }
+        }
+      );
+    }
   }
 
   render() {
@@ -67,17 +120,45 @@ class App extends Component {
         marginRight: 10
       };
     };
+    // const cardsInitial = this.state.cards.map(item => (
+    //   <div
+    //     keys={item.id}
+    //     onClick={() => this.handleSelectCard(item)}
+    //     style={
+    //       this.state.start
+    //         ? stylesVisible(item.color)
+    //         : stylesOffVisible(item.color)
+    //     }
+    //   >
+    //     {item.id === this.state.selected.id ? (
+    //       <div
+    //         style={{
+    //           backgroundColor: item.color,
+    //           width: 70,
+    //           height: 70,
+    //           margin: "auto"
+    //         }}
+    //       />
+    //     ) : null}
+    //   </div>
+    // ));
+
     const cards = this.state.cards.map(item => (
       <div
         keys={item.id}
         onClick={() => this.handleSelectCard(item)}
-        style={
-          this.state.start
-            ? stylesVisible(item.color)
-            : stylesOffVisible(item.color)
-        }
+        style={stylesOffVisible(item.color)}
       >
-        {this.state.selected.isTrue && item.id === this.state.selected.id ? (
+        {item.id === this.state.selected.id ? (
+          <div
+            style={{
+              backgroundColor: item.color,
+              width: 70,
+              height: 70,
+              margin: "auto"
+            }}
+          />
+        ) : item.match ? (
           <div
             style={{
               backgroundColor: item.color,
@@ -89,6 +170,7 @@ class App extends Component {
         ) : null}
       </div>
     ));
+
     return <div className="main">{cards}</div>;
   }
 }
