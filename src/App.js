@@ -66,7 +66,7 @@ class App extends Component {
             }
           }
           console.log("MAcTH", cardsNovos);
-          //this.newCards(cardsNovos);
+          this.newCards(cardsNovos);
         }
       });
     }
@@ -105,16 +105,18 @@ class App extends Component {
         return this.setState(
           prevState => {
             return {
+              selected: selectedItem,
               selectedColors: [...prevState.selectedColors, selectedItem]
             };
           },
           () => {
             console.log("MIXO", this.state);
-            //this.matchValues();
+            this.matchValues();
           }
         );
+      } else {
+        this.setColorVisible(item, false);
       }
-      this.setColorVisible(item, false);
     }
   }
 
@@ -147,16 +149,7 @@ class App extends Component {
           this.state.start ? stylesVisible(item.color) : stylesOffVisible()
         }
       >
-        {item.id === this.state.selected.id ? (
-          <div
-            style={{
-              backgroundColor: item.color,
-              width: 70,
-              height: 70,
-              margin: "auto"
-            }}
-          />
-        ) : item.match ? (
+        {item.visible || item.match ? (
           <div
             style={{
               backgroundColor: item.color,
