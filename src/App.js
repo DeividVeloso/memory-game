@@ -52,7 +52,7 @@ class App extends Component {
   matchValues = () => {
     if (this.state.selectedColors.length === 2) {
       this.state.selectedColors.forEach(item => {
-        if (this.state.selected.color === item.color) {
+        if (this.state.selected.id === item.id) {
           const itemNovo = {
             ...item,
             match: true
@@ -65,11 +65,30 @@ class App extends Component {
               cardsNovos.push(this.state.cards[i]);
             }
           }
-          this.newCards(cardsNovos);
+          console.log("MAcTH", cardsNovos);
+          //this.newCards(cardsNovos);
         }
       });
     }
   };
+
+  setColorVisible(item, visible) {
+    let cardsNovos = [];
+    for (let i = 0; i < this.state.cards.length; i++) {
+      if (item.id === this.state.cards[i].id) {
+        const itemNovo = {
+          ...item,
+          visible: visible
+        };
+        cardsNovos.push(itemNovo);
+      } else {
+        cardsNovos.push(this.state.cards[i]);
+      }
+    }
+    this.setState({
+      cards: cardsNovos
+    });
+  }
 
   handleSelectCard(item) {
     if (!item.match) {
@@ -80,22 +99,22 @@ class App extends Component {
         match: false
       };
 
+      this.setColorVisible(item, true);
+
       if (this.state.selectedColors.length < 2) {
         return this.setState(
           prevState => {
             return {
-              selected: selectedItem,
               selectedColors: [...prevState.selectedColors, selectedItem]
             };
           },
           () => {
-            this.matchValues();
+            console.log("MIXO", this.state);
+            //this.matchValues();
           }
         );
       }
-      this.setState({
-        selectedColors: []
-      });
+      this.setColorVisible(item, false);
     }
   }
 
