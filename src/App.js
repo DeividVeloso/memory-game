@@ -31,14 +31,47 @@ class App extends Component {
         visible: false,
         match: false
       },
-      selectedColors: []
+      selectedColors: [],
+      start: false
     };
 
     this.handleSelectCard = this.handleSelectCard.bind(this);
   }
 
+  newCards = cardsNovos => {
+    this.setState(
+      {
+        selected: {},
+        selectedColors: [],
+        cards: cardsNovos
+      },
+      () => console.log("POXA", this.state)
+    );
+  };
+
+  matchValues = () => {
+    if (this.state.selectedColors.length === 2) {
+      this.state.selectedColors.forEach(item => {
+        if (this.state.selected.color === item.color) {
+          const itemNovo = {
+            ...item,
+            match: true
+          };
+          let cardsNovos = [];
+          for (let i = 0; i < this.state.cards.length; i++) {
+            if (item.id === this.state.cards[i].id) {
+              cardsNovos.push(itemNovo);
+            } else {
+              cardsNovos.push(this.state.cards[i]);
+            }
+          }
+          this.newCards(cardsNovos);
+        }
+      });
+    }
+  };
+
   handleSelectCard(item) {
-    console.log("XXX", item);
     if (!item.match) {
       const selectedItem = {
         id: item.id,
@@ -48,60 +81,21 @@ class App extends Component {
       };
 
       if (this.state.selectedColors.length < 2) {
-        this.setState(
+        return this.setState(
           prevState => {
             return {
               selected: selectedItem,
               selectedColors: [...prevState.selectedColors, selectedItem]
             };
           },
-          () => console.log("SLSLLS", this.state)
+          () => {
+            this.matchValues();
+          }
         );
       }
-      // this.setState({
-      //   selected: selected
-      // });
-      // this.setState(
-      //   {
-      //     selected,
-      //     selectedColors: novoSelects
-      //   },
-      //   () => {
-      //     if (this.state.selectedColors.length === 2) {
-      //       this.state.selectedColors.forEach(item => {
-      //         if (this.state.selected.color === item.color) {
-      //           const itemNovo = {
-      //             ...item,
-      //             match: true
-      //           };
-
-      //           //let cardsNovos = [];
-
-      //           // for (let i = 0; i < this.state.cards.length; i++) {
-      //           //   if (this.state.cards[i].color === item.color) {
-      //           //     console.log("XECA", itemNovo);
-      //           //     cardsNovos.push(itemNovo);
-      //           //   } else {
-      //           //     cardsNovos.push(this.state.cards[i]);
-      //           //   }
-      //           // }
-
-      //           // this.setState(
-      //           //   {
-      //           //     cards: cardsNovos
-      //           //   },
-      //           //   () => console.log("POXA", this.state)
-      //           // );
-      //         }
-      //       });
-
-      //       // this.setState({
-      //       //   selectedColors: [],
-      //       //   selected: {}
-      //       // });
-      //     }
-      //   }
-      // );
+      this.setState({
+        selectedColors: []
+      });
     }
   }
 
@@ -125,34 +119,14 @@ class App extends Component {
         marginRight: 10
       };
     };
-    // const cardsInitial = this.state.cards.map(item => (
-    //   <div
-    //     keys={item.id}
-    //     onClick={() => this.handleSelectCard(item)}
-    //     style={
-    //       this.state.start
-    //         ? stylesVisible(item.color)
-    //         : stylesOffVisible(item.color)
-    //     }
-    //   >
-    //     {item.id === this.state.selected.id ? (
-    //       <div
-    //         style={{
-    //           backgroundColor: item.color,
-    //           width: 70,
-    //           height: 70,
-    //           margin: "auto"
-    //         }}
-    //       />
-    //     ) : null}
-    //   </div>
-    // ));
 
     const cards = this.state.cards.map(item => (
       <div
         keys={item.id}
         onClick={() => this.handleSelectCard(item)}
-        style={stylesOffVisible(item.color)}
+        style={
+          this.state.start ? stylesVisible(item.color) : stylesOffVisible()
+        }
       >
         {item.id === this.state.selected.id ? (
           <div
