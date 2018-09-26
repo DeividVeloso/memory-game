@@ -31,72 +31,77 @@ class App extends Component {
         visible: false,
         match: false
       },
-      selecs: []
+      selectedColors: []
     };
 
     this.handleSelectCard = this.handleSelectCard.bind(this);
   }
 
   handleSelectCard(item) {
+    console.log("XXX", item);
     if (!item.match) {
-      const selected = {
+      const selectedItem = {
         id: item.id,
         color: item.color,
-        visible: true
+        visible: true,
+        match: false
       };
-      let novoSelects = [];
-      if (this.state.selecs.length <= 2) {
-        novoSelects.push(selected);
+
+      if (this.state.selectedColors.length < 2) {
+        this.setState(
+          prevState => {
+            return {
+              selected: selectedItem,
+              selectedColors: [...prevState.selectedColors, selectedItem]
+            };
+          },
+          () => console.log("SLSLLS", this.state)
+        );
       }
-      console.log("CADE", novoSelects);
-      console.log("CADE2", this.state.selecs);
+      // this.setState({
+      //   selected: selected
+      // });
+      // this.setState(
+      //   {
+      //     selected,
+      //     selectedColors: novoSelects
+      //   },
+      //   () => {
+      //     if (this.state.selectedColors.length === 2) {
+      //       this.state.selectedColors.forEach(item => {
+      //         if (this.state.selected.color === item.color) {
+      //           const itemNovo = {
+      //             ...item,
+      //             match: true
+      //           };
 
-      this.setState(
-        {
-          selected,
-          selecs: novoSelects
-        },
-        () => {
-          if (this.state.selecs.length === 2) {
-            this.state.selecs.forEach(item => {
-              if (
-                this.state.selected.color === item.color &&
-                this.state.selected.id === item.id
-              ) {
-                console.log("COMO", this.state.selected);
-                console.log("COMO2", item);
+      //           //let cardsNovos = [];
 
-                const itemNovo = {
-                  ...item,
-                  match: true
-                };
+      //           // for (let i = 0; i < this.state.cards.length; i++) {
+      //           //   if (this.state.cards[i].color === item.color) {
+      //           //     console.log("XECA", itemNovo);
+      //           //     cardsNovos.push(itemNovo);
+      //           //   } else {
+      //           //     cardsNovos.push(this.state.cards[i]);
+      //           //   }
+      //           // }
 
-                let cardsNovos = [];
+      //           // this.setState(
+      //           //   {
+      //           //     cards: cardsNovos
+      //           //   },
+      //           //   () => console.log("POXA", this.state)
+      //           // );
+      //         }
+      //       });
 
-                for (let i = 0; i < this.state.cards.length; i++) {
-                  if (this.state.cards[i].id === item.id) {
-                    cardsNovos.push(itemNovo);
-                  } else {
-                    cardsNovos.push(this.state.cards[i]);
-                  }
-                }
-                console.log("XECA", cardsNovos);
-                this.setState(
-                  {
-                    cards: cardsNovos
-                  },
-                  () => console.log("POXA", this.state)
-                );
-              }
-            });
-
-            // this.setState({
-            //   selecs: [],
-            //   selected: {}
-            // });
-          }
-        }
-      );
+      //       // this.setState({
+      //       //   selectedColors: [],
+      //       //   selected: {}
+      //       // });
+      //     }
+      //   }
+      // );
     }
   }
 
