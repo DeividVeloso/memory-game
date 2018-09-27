@@ -52,22 +52,28 @@ class App extends Component {
   matchValues = () => {
     if (this.state.selectedColors.length === 2) {
       this.state.selectedColors.forEach(item => {
-        if (this.state.selected.id === item.id) {
-          const itemNovo = {
-            ...item,
-            match: true
-          };
-          let cardsNovos = [];
-          for (let i = 0; i < this.state.cards.length; i++) {
-            if (item.id === this.state.cards[i].id) {
+        let cardsNovos = [];
+        for (let i = 0; i < this.state.cards.length; i++) {
+          if (item.id === this.state.cards[i].id) {
+            const itemNovo = {
+              ...item,
+              match: true
+            };
+            cardsNovos.push(itemNovo);
+          } else {
+            if (!this.state.cards[i].match) {
+              const itemNovo = {
+                ...this.state.cards[i],
+                visible: false
+              };
               cardsNovos.push(itemNovo);
             } else {
               cardsNovos.push(this.state.cards[i]);
             }
           }
-          console.log("MAcTH", cardsNovos);
-          this.newCards(cardsNovos);
         }
+
+        this.newCards(cardsNovos);
       });
     }
   };
@@ -91,7 +97,7 @@ class App extends Component {
   }
 
   handleSelectCard(item) {
-    if (!item.match) {
+    if (!item.match && this.state.selected.id !== item.id) {
       const selectedItem = {
         id: item.id,
         color: item.color,
@@ -111,6 +117,7 @@ class App extends Component {
           },
           () => {
             console.log("MIXO", this.state);
+
             this.matchValues();
           }
         );
