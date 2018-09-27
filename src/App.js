@@ -32,98 +32,49 @@ class App extends Component {
         match: false
       },
       selectedColors: [],
+      matchedColors: [],
+
       start: false
     };
 
     this.handleSelectCard = this.handleSelectCard.bind(this);
   }
 
-  newCards = cardsNovos => {
-    this.setState(
-      {
-        selected: {},
-        selectedColors: [],
-        cards: cardsNovos
-      },
-      () => console.log("POXA", this.state)
-    );
-  };
-
-  matchValues = () => {
-    if (this.state.selectedColors.length === 2) {
-      this.state.selectedColors.forEach(item => {
-        let cardsNovos = [];
-        for (let i = 0; i < this.state.cards.length; i++) {
-          if (item.id === this.state.cards[i].id) {
-            const itemNovo = {
-              ...item,
-              match: true
-            };
-            cardsNovos.push(itemNovo);
-          } else {
-            if (!this.state.cards[i].match) {
-              const itemNovo = {
-                ...this.state.cards[i],
-                visible: false
-              };
-              cardsNovos.push(itemNovo);
-            } else {
-              cardsNovos.push(this.state.cards[i]);
-            }
-          }
-        }
-
-        this.newCards(cardsNovos);
-      });
-    }
-  };
-
-  setColorVisible(item, visible) {
-    let cardsNovos = [];
-    for (let i = 0; i < this.state.cards.length; i++) {
-      if (item.id === this.state.cards[i].id) {
-        const itemNovo = {
-          ...item,
-          visible: visible
-        };
-        cardsNovos.push(itemNovo);
-      } else {
-        cardsNovos.push(this.state.cards[i]);
-      }
-    }
-    this.setState({
-      cards: cardsNovos
-    });
-  }
-
   handleSelectCard(item) {
-    if (!item.match && this.state.selected.id !== item.id) {
-      const selectedItem = {
-        id: item.id,
-        color: item.color,
-        visible: true,
-        match: false
-      };
-
-      this.setColorVisible(item, true);
-
-      if (this.state.selectedColors.length < 2) {
-        return this.setState(
-          prevState => {
-            return {
-              selected: selectedItem,
-              selectedColors: [...prevState.selectedColors, selectedItem]
-            };
-          },
-          () => {
-            console.log("MIXO", this.state);
-
-            this.matchValues();
+    //Seleciona duas cores que eu cliquei por vez
+    if (
+      this.state.selectedColors.length < 2 &&
+      item.id !== this.state.selected.id //Verifica se o item atual que eu escolhi é diferente do que já foi escolhido antes.
+    ) {
+      this.setState(
+        prevState => {
+          const visibleItem = { ...item, visible: true }; //Deixa o item visivel
+          return {
+            selected: visibleItem,
+            selectedColors: [...prevState.selectedColors, visibleItem]
+          };
+        },
+        () => {
+          //Faz o match para ver se as cores são iguais, e deixa visivel
+          if (this.state.selectedColors.length === 2) {
+            //Varre os itens selecionados
+            this.state.selectedColors.forEach(item => {
+              if (item.color === color) {
+                console.log("ENTROU AQUI", color);
+                this.setState(
+                  {
+                    matchedColors: [{ ...item, match: true }]
+                  },
+                  () => {
+                    console.log("MActh", this.state.matchedColors);
+                  }
+                );
+              }
+            });
           }
-        );
-      } else {
-        this.setColorVisible(item, false);
-      }
+          console.log("Color", this.state.selectedColors);
+        }
+      );
     }
   }
 
