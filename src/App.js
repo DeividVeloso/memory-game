@@ -57,22 +57,58 @@ class App extends Component {
         () => {
           //Faz o match para ver se as cores são iguais, e deixa visivel
           if (this.state.selectedColors.length === 2) {
+            //Array com os matches
+            const arrayEquals = [];
             //Varre os itens selecionados
+            const newArray = this.state.selectedColors;
             this.state.selectedColors.forEach(item => {
-              if (item.color === color) {
-                console.log("ENTROU AQUI", color);
-                this.setState(
-                  {
-                    matchedColors: [{ ...item, match: true }]
-                  },
-                  () => {
-                    console.log("MActh", this.state.matchedColors);
-                  }
-                );
-              }
+              newArray.forEach(itemNew => {
+                if (item.color === itemNew.color) {
+                  arrayEquals.push(item);
+                }
+              });
             });
+
+            if (arrayEquals.length > 2) {
+              let newCardsMacth = [];
+              arrayEquals.filter(x => x.visible === true).map(item => {
+                for (let i = 0; i < this.state.cards.length; i++) {
+                  if (this.state.cards[i].id === item.id) {
+                    console.log("ÏTEMS", this.state.cards[i]);
+                    console.log("item", item);
+
+                    //newCardsMacth.push({ ...item, match: true, visible: true });
+                  } else {
+                    //newCardsMacth.push(this.state.cards[i]);
+                  }
+                }
+              });
+              console.log("MATCHED", newCardsMacth);
+              this.setState({
+                selectedColors: [],
+                cards: newCardsMacth
+              });
+            } else {
+              console.log("NOTOOO-MATCHES", arrayEquals);
+              let newCards = [];
+              arrayEquals.forEach(item => {
+                for (let i = 0; i < this.state.cards.length; i++) {
+                  if (this.state.cards[i].id === item.id) {
+                    newCards.push({ ...item, match: false, visible: false });
+                  } else {
+                    newCards.push(this.state.cards[i]);
+                  }
+                }
+              });
+
+              this.setState({
+                selectedColors: [],
+                cards: newCards
+              });
+            }
           }
           console.log("Color", this.state.selectedColors);
+          console.log("Color", this.state.cards);
         }
       );
     }
@@ -107,7 +143,7 @@ class App extends Component {
           this.state.start ? stylesVisible(item.color) : stylesOffVisible()
         }
       >
-        {item.visible || item.match ? (
+        {this.state.selected.visible ? (
           <div
             style={{
               backgroundColor: item.color,
