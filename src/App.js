@@ -32,26 +32,79 @@ export default class App extends React.Component {
       { id: 15, cardState: CardState.HIDING, backgroundColor: "lightsky" }
     ];
     cards = shuffle(cards);
-    this.state = { cards, noClick: false };
+    this.state = { 
+      cards, 
+      noClick: false 
+    };
     this.handleClick = this.handleClick.bind(this);
   }
 
+  handleNewGame = () => {
+    let cards = this.state.cards.map(c => {
+      return {
+        ...c,
+        cardState: CardState.HIDING
+      }
+    })
+    cards = shuffle(cards);
+    this.setState({cards})
+  }
+
   handleClick(id) {
-    this.setState(prevState => {
-      let cards = prevState.cards.map(
-        c =>
-          c.id === id
-            ? {
-                ...c,
-                cardState:
-                  c.cardState === CardState.HIDING
-                    ? CardState.MATCHING
-                    : CardState.HIDING
-              }
-            : c
-      );
-      return { cards };
-    });
+    const mapCardState = (cards, idsToChange, newCardState) => {
+      return cards.map(c => {
+        //Verifica se o item do array tem dentro do idsToChage, se tiver muda para um novo estado
+        if(idsToChange.includes(c.id)) { 
+          return {
+            ...c,
+            cardState: newCardState 
+          }
+        }
+        return c;//Retorna do jeito que estava no array Cards
+      })
+    }//Fim da funcao mapCarsState
+
+    //Pega o Item que eu cliquei na tela.
+    const foundCard = this.state.cards.find(c => c.id === id);
+
+    //Se o Card que eu cliquei ou ele for diferente de HIDDING eu retorno,
+    //Pois já é um item visivel.
+    if(this.state.onClick || foundCard.cardState !== CardState.HIDING) {
+      return 
+    }
+
+    //Usado para decidir se o usuário vai por clicar de novo ou não
+    let noClick = false;
+
+    //Nesse ponto ele deixa visivel o card que acabei de clicar.
+    let cards = mapCardState(this.state.cards, [id], CardState.SHOWING)
+
+    //Pega só os cards que estão Visiveis na tela.
+    const showingCards = cards.filter((c) => c.cardState === CardState.SHOWING)
+
+    //Pegando só os Ids dos Cards Visiveis na tela
+    const ids = showingCards.map(c => c.id)
+
+    //Verifico se tem dois cards selecionads e se as cores são iguais
+    if(showingCards.length === 2 && showingCards[0].backgroundColor === showingCards[1].backgroundColor) {
+      cards = mapCardState(cards, ids, CardState.MATCHING);
+    } //Caso não tenha as mesmas cores entao eu escondo novamente esses cards selecionados
+    else if(showingCards.length === 2) {
+      let hidingCards = mapCardState(cards, ids, CardState.HIDING);
+      //Trava o click, 
+      noClick = true;
+      //pois vou esperar dois segundos antes de esconder os cards selecionados com a cor errada.
+      this.setState({cards, noClick}, () => {
+        setTimeout(() => {
+          //Escondo os cards errados, e libero o click novamente para selecionar outros
+          this.setState({cards: hidingCards, noClick: false})
+        })
+      }, 1500);
+      return
+    }
+    //Se selecionou o primeiro card
+    //Se deu match
+    this.setState({cards, noClick})
   }
 
   render() {
@@ -65,7 +118,7 @@ export default class App extends React.Component {
     ));
     return (
       <div>
-        <Navbar />
+        <Navbar onNewGame={this.handleNewGame}/>
         {cards}
       </div>
     );

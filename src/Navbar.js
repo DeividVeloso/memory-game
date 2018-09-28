@@ -7,7 +7,7 @@ class Navbar extends React.PureComponent {
         <h2>
           <a>Memory Game</a>
         </h2>
-        <nav>
+        <nav onClick={this.props.onNewGame}>
           <li>
             <a>New Game</a>
           </li>
